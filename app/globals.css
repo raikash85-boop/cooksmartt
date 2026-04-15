@@ -1,0 +1,180 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(0.08 0.01 180); /* Deep space blue-black */
+  --foreground: oklch(0.98 0 0); /* Pure white */
+  --card: oklch(0.12 0.02 180 / 0.5); /* Glass dark */
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.12 0.02 180 / 0.95);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.65 0.18 160); /* Glowing Emerald/Teal */
+  --primary-foreground: oklch(0.05 0 0); 
+  --secondary: oklch(0.20 0.05 230); /* Deep blue */
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.15 0.03 180);
+  --muted-foreground: oklch(0.65 0.02 180);
+  --accent: oklch(0.60 0.15 200); /* Neon Teal */
+  --accent-foreground: oklch(0.05 0 0);
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.25 0.05 180);
+  --input: oklch(0.20 0.05 180);
+  --ring: oklch(0.65 0.18 160);
+  --radius: 1rem;
+}
+
+.dark {
+  --background: oklch(0.08 0.01 180);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.12 0.02 180 / 0.5);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.12 0.02 180 / 0.95);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.65 0.18 160);
+  --primary-foreground: oklch(0.05 0 0);
+  --secondary: oklch(0.20 0.05 230);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.15 0.03 180);
+  --muted-foreground: oklch(0.65 0.02 180);
+  --accent: oklch(0.60 0.15 200);
+  --accent-foreground: oklch(0.05 0 0);
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.25 0.05 180);
+  --input: oklch(0.20 0.05 180);
+  --ring: oklch(0.65 0.18 160);
+}
+
+@theme inline {
+  --font-sans: 'Geist', 'Geist Fallback', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Glass morphism utilities */
+.glass {
+  background: rgba(20, 20, 23, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-card {
+  background: rgba(30, 30, 35, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+}
+
+.glass-panel {
+  background: linear-gradient(135deg, rgba(20, 25, 30, 0.8) 0%, rgba(10, 15, 20, 0.9) 100%);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Animated gradient background for hero */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-gradient-bg {
+  background: linear-gradient(-45deg, #0a192f, #052b2b, #0d3b4a, #0a192f);
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+/* Subtle glow effect for borders */
+.glow-border {
+  position: relative;
+}
+.glow-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(to right, oklch(0.65 0.18 160), oklch(0.60 0.15 200));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Float Animation */
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 6s ease-in-out 3s infinite;
+}
+
+/* Grid Background */
+.bg-grid-cyber {
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* Pulse glow core */
+@keyframes pulse-core {
+  0%, 100% { box-shadow: 0 0 20px 0px rgba(34, 197, 94, 0.2); }
+  50% { box-shadow: 0 0 40px 10px rgba(34, 197, 94, 0.4); }
+}
+
+.animate-pulse-core {
+  animation: pulse-core 3s ease-in-out infinite;
+}
+
+/* Hide scrollbar logically but allow scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

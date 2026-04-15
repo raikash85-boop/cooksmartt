@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Using SQLite for instant local development logic verification. 
+// For Production PostgreSQL, uncomment the lines below and adjust .env:
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      String   @default("USER") // "USER", "SELLER", "ADMIN" 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sellerProfile SellerProfile?
+  messagesSent   Message[] @relation("SentMessages")
+  messagesRcvd   Message[] @relation("ReceivedMessages")
+  history        RecommendationHistory[]
+}
+
+model SellerProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName String
+  verified    Boolean  @default(false)
+  rating      Float    @default(0.0)
+  isOnline    Boolean  @default(false)
+  
+  gpsRecords  LocationRecord[]
+}
+
+model LocationRecord {
+  id          String   @id @default(cuid())
+  sellerId    String
+  seller      SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  latitude    Float
+  longitude   Float
+  timestamp   DateTime @default(now())
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  senderId    String
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId  String
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  content     String
+  timestamp   DateTime @default(now())
+}
+
+model RecommendationHistory {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  selectedOption    String
+  city              String
+  budget            Int      @default(0)
+  carbonSaved       Float    @default(0)
+  createdAt         DateTime @default(now())
+}

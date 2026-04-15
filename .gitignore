@@ -7,10 +7,19 @@ __v0_jsx-dev-runtime.ts
 .vercel/
 next.user-config.*
 
-# Environment variables
+# Environment variables - NEVER commit real secrets
+.env
+.env.local
 .env*.local
+
+# SQLite local dev database
+prisma/*.db
+prisma/*.db-journal
 
 # Common ignores
 node_modules
 .next/
 .DS_Store
+
+# Push scripts
+push.bat

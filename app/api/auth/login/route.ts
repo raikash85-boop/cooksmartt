@@ -35,6 +35,7 @@ export async function POST(req: Request) {
     const res = NextResponse.json({
       user: { id: user.id, email: user.email, role: user.role },
       token,
+      role: user.role,
     }, { status: 200 })
 
     // Optional: Set HTTP-Only Cookie for additional layer of security

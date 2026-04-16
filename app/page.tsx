@@ -13,16 +13,25 @@ import { GovernmentSchemes } from '@/components/government-schemes'
 import { CommunityReviews } from '@/components/community-reviews'
 import { SmartInsights } from '@/components/smart-insights'
 import { UserAccountSection } from '@/components/user-account-section'
+import { RegisterModal } from '@/components/register-modal'
 import { Footer } from '@/components/footer'
 import { calculateRecommendations } from '@/lib/calculator'
 import type { UserFormData, CookingOption, SavedRecommendation } from '@/lib/types'
+
+type Role = 'USER' | 'SELLER'
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState<UserFormData | null>(null)
   const [recommendations, setRecommendations] = useState<CookingOption[]>([])
   const [savedRecommendations, setSavedRecommendations] = useState<SavedRecommendation[]>([])
-  
+
+  // Auth / registration modal state
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalRole, setModalRole] = useState<Role>('USER')
+  const [authToken, setAuthToken] = useState<string | null>(null)
+  const [loggedInRole, setLoggedInRole] = useState<Role | null>(null)
+
   const formRef = useRef<HTMLDivElement>(null)
   const resultsRef = useRef<HTMLDivElement>(null)
 
@@ -47,6 +56,26 @@ export default function Home() {
 
   const scrollToForm = () => {
     formRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const openConsumerModal = () => {
+    setModalRole('USER')
+    setModalOpen(true)
+  }
+
+  const openSellerModal = () => {
+    setModalRole('SELLER')
+    setModalOpen(true)
+  }
+
+  const handleAuthSuccess = (token: string, role: Role) => {
+    setAuthToken(token)
+    setLoggedInRole(role)
+    // Persist token for API calls
+    localStorage.setItem('cooksmart-token', token)
+    localStorage.setItem('cooksmart-role', role)
+    // Consumer → scroll to form; Seller → could redirect to dashboard in future
+    if (role === 'USER') scrollToForm()
   }
 
   const handleFormSubmit = async (data: UserFormData) => {
@@ -127,9 +156,21 @@ Find your ideal cooking alternative at CookSmart! 🔗`
         onDelete={handleDeleteHistory}
         onClear={handleClearHistory}
       />
+
+      {/* Registration Modal */}
+      <RegisterModal
+        open={modalOpen}
+        defaultRole={modalRole}
+        onClose={() => setModalOpen(false)}
+        onSuccess={handleAuthSuccess}
+      />
       
       {/* Hero Section */}
-      <HeroSection onGetStarted={scrollToForm} />
+      <HeroSection
+        onGetStarted={scrollToForm}
+        onRegisterConsumer={openConsumerModal}
+        onRegisterSeller={openSellerModal}
+      />
       
       {/* Form Section */}
       <div ref={formRef}>

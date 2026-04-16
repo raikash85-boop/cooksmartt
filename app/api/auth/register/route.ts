@@ -7,8 +7,9 @@ import rateLimit from '@/lib/rate-limit'
 
 const registerSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(6),
   role: z.enum(['USER', 'SELLER', 'ADMIN']).optional().default('USER'),
+  companyName: z.string().min(2).optional(),
 })
 
 const limiter = rateLimit({ interval: 60000, uniqueTokenPerInterval: 500 })
@@ -19,7 +20,7 @@ export async function POST(req: Request) {
     await limiter.check(5, ip) // Max 5 registrations per minute per IP
 
     const body = await req.json()
-    const { email, password, role } = registerSchema.parse(body)
+    const { email, password, role, companyName } = registerSchema.parse(body)
 
     const existingUser = await db.user.findUnique({ where: { email } })
     if (existingUser) {
@@ -31,11 +32,22 @@ export async function POST(req: Request) {
       data: { email, password: hashedPassword, role },
     })
 
+    // Auto-create SellerProfile when registering as a seller
+    if (role === 'SELLER') {
+      await db.sellerProfile.create({
+        data: {
+          userId: user.id,
+          companyName: companyName || email.split('@')[0],
+        },
+      })
+    }
+
     const token = signToken({ userId: user.id, email: user.email, role: user.role })
 
     return NextResponse.json({
       user: { id: user.id, email: user.email, role: user.role },
       token,
+      role: user.role,
     }, { status: 201 })
   } catch (error) {
     if (error === 'Rate limit exceeded') {
